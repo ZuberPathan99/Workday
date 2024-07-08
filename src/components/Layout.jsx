@@ -18,10 +18,13 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { Link, Route, Routes, Navigate } from 'react-router-dom';
+import GroupsIcon from '@mui/icons-material/Groups';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Link, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import ProfilePage from '../pages/ProfilePage';
 import DashboardPage from '../pages/DashboardPage';
+import EmployeePage from '../pages/EmployeePage';
 
 const drawerWidth = 240;
 
@@ -54,6 +57,7 @@ const AppBarStyled = styled(AppBar, { shouldForwardProp: (prop) => prop !== 'ope
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: `${drawerWidth}px`,
       transition: theme.transitions.create(['margin', 'width'], {
+      
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
@@ -72,6 +76,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 function Layout() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -79,6 +84,15 @@ function Layout() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleLogout = () => {
+    // Clear user data from local storage
+    localStorage.removeItem('currentUser');
+    // Log logout information to console
+    console.log('User has been logged out');
+    // Redirect to login page
+    navigate('/login');
   };
 
   return (
@@ -95,9 +109,21 @@ function Layout() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Workday HCM
           </Typography>
+          <IconButton
+            color="inherit"
+            aria-label="logout"
+            onClick={handleLogout}
+            edge="end"
+            sx={{ display: 'flex', alignItems: 'center' }}
+          >
+            <LogoutIcon />
+            <Typography variant="button" sx={{ ml: 1 }}>
+              Logout
+            </Typography>
+          </IconButton>
         </Toolbar>
       </AppBarStyled>
       <Drawer
@@ -121,9 +147,12 @@ function Layout() {
         <Divider />
         <List>
           {[
-            { text: 'Home', icon: <HomeIcon />, path: '/' },
-            { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
-            { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+            { text: 'Home', icon: <HomeIcon />, path: '/layout' },
+            { text: 'Profile', icon: <PersonIcon />, path: '/layout/profile' },
+            { text: 'Dashboard', icon: <DashboardIcon />, path: '/layout/dashboard' },
+            { text: 'Employee Information', icon: <GroupsIcon />, path: '/layout/employee'},
+          
+
           ].map((item, index) => (
             <ListItem button key={index} component={Link} to={item.path}>
               <ListItemIcon>{item.icon}</ListItemIcon>
@@ -138,7 +167,9 @@ function Layout() {
           <Route path="/" element={<HomePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="/employee" element={<EmployeePage/>} />
+         
+          <Route path="*" element={<Navigate to="/layout" />} />
         </Routes>
       </Main>
     </Box>
@@ -146,3 +177,5 @@ function Layout() {
 }
 
 export default Layout;
+
+
